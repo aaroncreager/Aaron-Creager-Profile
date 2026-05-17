@@ -4,7 +4,7 @@
 <a href="https://www.linkedin.com/in/aaron-creager-679254268/"><img src="https://img.shields.io/badge/-LinkedIn-0072b1?&style=for-the-badge&logo=linkedin&logoColor=white" /></a>
 
 
-I am a recent graduate with an intrest Cyber Security and Network administration. 
+I am a recent graduate with an interest in Cyber Security and Network administration. 
 
 ## Objective
 
