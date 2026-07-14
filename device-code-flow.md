@@ -10,9 +10,6 @@ That "go authenticate somewhere else" split is the whole problem. Nothing ties t
 
 It also runs on Microsoft first-party public client IDs (like the Azure CLI client `04b07795-8ddb-461a-bbee-02f9e1bf7b46`) so there's no app registration and no client secret needed to fire it off.
 
-![Conditional Access policy in Entra](writeups/Images/2%20Conditional%20Access%20Policy%20Entra.png)
-
-
 ## Why a Linux box can pass as a "trusted" device
 Both chains lean on the same weak spot: the trust model behind device registration and Primary Refresh Tokens.
 
@@ -86,6 +83,8 @@ Microsoft classifies device code flow as a high-risk auth method and recommends 
 **Enable:** Start in **Report-only**, sanity-check with sign-in logs / the What-If tool, then flip it to On.
 
 **The Report-only trap.** In the Cyderes engagement, the tenant *had* policies to block device code flow and require MFA for device registration  they were just left in Report-only. So they dutifully logged every malicious step and blocked exactly none of it. Logging an attack isn't stopping an attack.
+
+![Device code flow via Microsoft Graph](writeups/Images/1%20Device%20Code%20Flow%20Mgraph.png)
 
 **Scoped exceptions.** For the legit stuff (Teams room devices, say), block everywhere and grant a persistent, account-scoped exception  just know the exception is account-wide, not scenario-specific. If DRS itself has to be reachable for a scenario its client ID is `01cb2876-7ebd-4aa4-9cc9-d28bd4d359a9` for explicit include/exclude handling.
 
