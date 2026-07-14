@@ -84,7 +84,7 @@ Microsoft classifies device code flow as a high-risk auth method and recommends 
 
 **The Report-only trap.** In the Cyderes engagement, the tenant *had* policies to block device code flow and require MFA for device registration  they were just left in Report-only. So they dutifully logged every malicious step and blocked exactly none of it. Logging an attack isn't stopping an attack.
 
-![Device code flow via Microsoft Graph](writeups/Images/1%20Device%20Code%20Flow%20Mgraph.png)
+![Device code flow via Graph](writeups/Images/02-device-code-flow-mgraph.png)
 
 **Scoped exceptions.** For the legit stuff (Teams room devices, say), block everywhere and grant a persistent, account-scoped exception  just know the exception is account-wide, not scenario-specific. If DRS itself has to be reachable for a scenario its client ID is `01cb2876-7ebd-4aa4-9cc9-d28bd4d359a9` for explicit include/exclude handling.
 
