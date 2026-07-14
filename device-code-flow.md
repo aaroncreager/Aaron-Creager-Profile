@@ -6,9 +6,7 @@ Device code flow is the OAuth 2.0 Device Authorization Grant (RFC 8628). It exis
 
 That "go authenticate somewhere else" split is the whole problem. Nothing ties the code to the person who asked for it. So if an attacker kicks off the flow and gets *you* to enter the code, congratulations — you just authorized *their* session. It's authorization abuse, not credential theft, which is exactly why resetting the password afterward does nothing.
 
-It also runs on Microsoft first-party public client IDs (like the Azure CLI client `04b07795-8ddb-461a-bbee-02f9e1bf7b46`), so there's no app registration and no client secret needed to fire it off.
-
-![Device code prompt from az login](images/01-device-code-.png)
+It also runs on Microsoft first-party public client IDs (like the Azure CLI client `04b07795-8ddb-461a-bbee-02f9e1bf7b46`) so there's no app registration and no client secret needed to fire it off.
 
 
 ## Why a Linux box can pass as a "trusted" device
@@ -36,8 +34,7 @@ An authorized red team engagement against a production tenant. The starting poin
 
 **The chain:**
  **Front door's locked.** Normal sign-in with the valid credential gets blocked by CA requiring a compliant/hybrid-joined device. ROPC is blocked too.
- **Find the door nobody guarded.** CA can target auth flows individually. Device code flow — which hits the Device Registration Service (DRS) instead of the standard token endpoint — wasn't covered by an enforced policy. Auth succeeds down that path. *(MITRE ATT&CK T1556.009 – Modify Authentication Process: Conditional Access Policies.)*
- **Register a phantom device.** DRS validates the token but doesn't bother checking that the caller is a real Windows machine. Using public tooling (`roadtx` from Dirk-Jan Mollema's roadtools), the team generates a keypair, sends a CSR to DRS, and gets a signed Azure AD device cert — a fully registered device identity from a Linux box. No TPM, no hardware, no admin approval. *(T1098.005 – Account Manipulation: Device Registration.)*
+ **Find the door nobody guarded.** CA can target auth flows individually. Device code flow — which hits the Device Registration Service (DRS) instead of the standard token endpoint — wasn't covered by an enforced policy. Auth succeeds down that path. 
  **Mint a PRT with fake claims.** The registered "device" is now trusted enough to request a **Primary Refresh Token** carrying the device claims that satisfy the very compliance conditions that blocked step 1.
  **Escalate through hybrid identity.** Separate from the device spoofing, the tenant had a pile of on-prem accounts synced to the cloud holding privileged roles, including Global Admin (the writeup counts 255 highly privileged directory roles). Pop one synced on-prem privileged account and you can reset cloud Global Admin passwords — full tenant takeover, no cloud-specific exploit required.
 
@@ -75,7 +72,7 @@ Device code flow is a real, needed thing: input constrained hardware (smart TVs,
 Microsoft classifies device code flow as a high-risk auth method and recommends blocking it wherever you can. The control lives in the Authentication flows condition.
 
 **What the policy should look like:**
-**Users:** All users (exclude your break-glass / emergency access accounts and any genuine service accounts).
+**Users:** All users exclude your break-glass.
 **Target resources:** **All resources.** This is the part people get wrong — since early September 2024, Microsoft only enforces authentication-flows policies against DRS when the policy targets all resources in the resource picker**. Scope it to specific apps and DRS is left wide open, which is precisely the door chain 1 strolled through.
 **Conditions > Authentication Flows:** Configure = Yes -> Device code flow.
 **Grant:** **Block access.**
