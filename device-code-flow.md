@@ -1,14 +1,15 @@
 # Device Code Flow, Device Identity Abuse, and the Conditional Access Gap
 I came across the Cyderes Howler Cell red team writeup on Entra device identity abuse, and pretty much right after the Forg365 PhaaS article showing the same device code flow getting weaponized in the wild. Reading them back to back, it's the same trick on both sides of the fence  a red team walking a blocked credential all the way to Global Admin, and a criminal subscription service selling the phishing version of it. So let's break down both chains, why Conditional Access keeps missing them, and how to actually shut the door.
 
-![Device code flow via Microsoft Graph](writeups/Images/1%20Device%20Code%20Flow%20Mgraph.png)
 
-## Quick background: what device code flow even is
+## Quick background: what device code fow is
 Device code flow is the OAuth 2.0 Device Authorization Grant. It exists so you can sign in on something that can't really do a browser login — smart TVs, printers, IoT gear, CLI tools, conference-room / Teams devices. The device shows a short code, you punch that code into a browser on your phone or laptop, and MFA happens there.
 
 That "go authenticate somewhere else" split is the whole problem. Nothing ties the code to the person who asked for it. So if an attacker kicks off the flow and gets *you* to enter the code, congratulations — you just authorized *their* session. It's authorization abuse, not credential theft, which is exactly why resetting the password afterward does nothing.
 
 It also runs on Microsoft first-party public client IDs (like the Azure CLI client `04b07795-8ddb-461a-bbee-02f9e1bf7b46`) so there's no app registration and no client secret needed to fire it off.
+
+![Device code flow via Microsoft Graph](writeups/Images/1%20Device%20Code%20Flow%20Mgraph.png)
 
 ## Why a Linux box can pass as a "trusted" device
 Both chains lean on the same weak spot: the trust model behind device registration and Primary Refresh Tokens.
