@@ -84,7 +84,7 @@ Microsoft classifies device code flow as a high-risk auth method and recommends 
 
 **Then verify it.** CISA's SCuBA project added an Entra baseline policy and a ScubaGear check specifically for blocking device-code phishing. 
 
-## Detection & hunting
+## Detections
 Entra sign-in logs are where this all shows up. Signals worth watching:
 
 `originalTransferMethod = deviceCodeFlow` — filter for it, especially paired with a device registration right after. That combo is the core Storm-2372 / Forg365 tell.
